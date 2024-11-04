@@ -18,7 +18,7 @@ export default function Home() {
         setChosen(jsonData.chosen);
         setPossibleWords(jsonData.possible_words);
         console.log(jsonData.chosen)
-        console.log(possibleWords)
+        console.log(jsonData.possible_words)
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -40,6 +40,7 @@ export default function Home() {
   };
 
   // const chosen = ["1", "2", "3", "4", "5", "6", "7"];
+  console.log(possibleWords)
   return (
     <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
       <span>
