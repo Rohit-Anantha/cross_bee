@@ -1,20 +1,46 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const request = new Request("https://crossbeeflask.vercel.app/");
+  const [chosen, setChosen] = useState([""]); // Initialize as state
+  const [possibleWords, setPossibleWords] = useState([]);
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await fetch("https://crossbeeflask.vercel.app/"); // Replace with your endpoint URL
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const jsonData = await response.json(); // Parse JSON directly
+        setChosen(jsonData.chosen);
+        setPossibleWords(jsonData.possible_words);
+        console.log(jsonData.chosen)
+        console.log(jsonData.possible_words)
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
+    }
+    getData();
+  }, []);
+
   const [toDisplay, setToDisplay] = useState("");
+  const [toStore, setToStore] = useState("");
   const handleSymbolClick = (value: string, honey_char: boolean = false) => {
     if (!honey_char) {
       setToDisplay(toDisplay.concat(value));
+      setToStore(toDisplay);
     } else {
+      setToStore(toStore.concat(value));
       const temp = `${toDisplay}<span style="color: #fbbf24;">${value}</span>`;
       setToDisplay(temp);
     }
   };
 
-  const buttonVals = ["1", "2", "3", "4", "5", "6", "7"];
+  // const chosen = ["1", "2", "3", "4", "5", "6", "7"];
   return (
     <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
       <span>
@@ -27,33 +53,33 @@ export default function Home() {
       </span>
       <div className="grid grid-rows-3 gap-4 p-40">
         <div className="grid grid-cols-2 gap-4">
-          <Button onClick={() => handleSymbolClick(buttonVals[0])}>
-            {buttonVals[0]}
+          <Button onClick={() => handleSymbolClick(chosen[0])}>
+            {chosen[0]}
           </Button>
-          <Button onClick={() => handleSymbolClick(buttonVals[1])}>
-            {buttonVals[1]}
+          <Button onClick={() => handleSymbolClick(chosen[1])}>
+            {chosen[1]}
           </Button>
         </div>
         <div className="grid grid-cols-3 gap-4">
-          <Button onClick={() => handleSymbolClick(buttonVals[2])}>
-            {buttonVals[2]}
+          <Button onClick={() => handleSymbolClick(chosen[2])}>
+            {chosen[2]}
           </Button>
           <Button
             className="bg-amber-400"
-            onClick={() => handleSymbolClick(buttonVals[3], true)}
+            onClick={() => handleSymbolClick(chosen[3], true)}
           >
-            {buttonVals[3]}
+            {chosen[3]}
           </Button>
-          <Button onClick={() => handleSymbolClick(buttonVals[4])}>
-            {buttonVals[4]}
+          <Button onClick={() => handleSymbolClick(chosen[4])}>
+            {chosen[4]}
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Button onClick={() => handleSymbolClick(buttonVals[5])}>
-            {buttonVals[5]}
+          <Button onClick={() => handleSymbolClick(chosen[5])}>
+            {chosen[5]}
           </Button>
-          <Button onClick={() => handleSymbolClick(buttonVals[6])}>
-            {buttonVals[6]}
+          <Button onClick={() => handleSymbolClick(chosen[6])}>
+            {chosen[6]}
           </Button>
         </div>
       </div>
