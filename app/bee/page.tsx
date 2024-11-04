@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const request = new Request("https://crossbeeflask.vercel.app/");
   const [chosen, setChosen] = useState([""]); // Initialize as state
   const [possibleWords, setPossibleWords] = useState([]);
 
@@ -19,7 +18,7 @@ export default function Home() {
         setChosen(jsonData.chosen);
         setPossibleWords(jsonData.possible_words);
         console.log(jsonData.chosen)
-        console.log(jsonData.possible_words)
+        console.log(possibleWords)
       } catch (error) {
         console.error("Fetch error:", error);
       }
