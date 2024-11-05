@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Delete } from "lucide-react";
+import { addGuess } from "@/src/db/queries";
 
 interface GameDisplayProps {
   chosen: string[];
@@ -13,6 +14,7 @@ export default function GameDisplay({
   chosen,
   possible_words,
 }: GameDisplayProps) {
+  console.log(possible_words);
   const [toDisplay, setToDisplay] = useState("");
   const [toStore, setToStore] = useState("");
   const honey_char = chosen[3];
@@ -40,6 +42,12 @@ export default function GameDisplay({
         `<span style="color: #fbbf24;">${honey_char}</span>`,
       ),
     );
+  };
+
+  const handleSubmit = () => {
+    console.log("handle submit");
+    console.log(toStore);
+    addGuess(toStore);
   };
 
   return (
@@ -90,7 +98,11 @@ export default function GameDisplay({
         </div>
       </div>
       <div className="flex items-center">
-        <Button className="bg-amber-400 font-extrabold" type="submit">
+        <Button
+          className="bg-amber-400 font-extrabold"
+          type="submit"
+          onClick={() => handleSubmit()}
+        >
           SUBMIT
         </Button>
       </div>

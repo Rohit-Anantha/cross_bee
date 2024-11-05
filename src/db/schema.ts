@@ -1,5 +1,4 @@
-import { sql } from "drizzle-orm";
-import { pgTableCreator, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { pgTableCreator, text, uuid } from "drizzle-orm/pg-core";
 
 const createTable = pgTableCreator((name) => `cross_bee_${name}`);
 
