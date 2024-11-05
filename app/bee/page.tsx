@@ -61,7 +61,7 @@ export default function Home() {
   return (
     <div className="grid grid-cols-3 items-center">
       <GuessBox />
-      <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 sm:p-20">
+      <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
         <Display toDisplay={toDisplay} onBackspace={handleBackspace} />
         <SymbolGrid
           chosen={chosen}
