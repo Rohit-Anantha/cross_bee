@@ -1,74 +1,40 @@
 // Home.tsx
 
-"use client";
 import { useEffect, useState } from "react";
-import Display from "../../components/ui/Display";
-import SymbolGrid from "../../components/ui/SymbolGrid";
-import SubmitButton from "../../components/ui/SubmitButton";
 import GuessBox from "../../components/ui/GuessBox";
 import Hints from "../../components/ui/Hints";
+import GameWrapper from "@/components/ui/GameWrapper";
 
-export default function Home() {
-  const [chosen, setChosen] = useState([""]);
-  const [possibleWords, setPossibleWords] = useState([]);
-  const [toDisplay, setToDisplay] = useState("");
-  const [toStore, setToStore] = useState("");
+export default async function Home() {
+  // async call to api directly
+  const data = await getData();
+  if (!data) {
+    // Handle the case where data is undefined
+    return [[""], [""]];
+  }
+  const [chosen, possible_words] = data;
 
-  useEffect(() => {
-    async function getData() {
-      try {
-        const response = await fetch("https://crossbeeflask.vercel.app/");
-        if (!response.ok)
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        const jsonData = await response.json();
-        setChosen(jsonData.chosen);
-        setPossibleWords(jsonData.possible_words);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
+  async function getData() {
+    try {
+      const response = await fetch("https://crossbeeflask.vercel.app/");
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      const jsonData = await response.json();
+      return [jsonData.chosen as string[], jsonData.possible_words as string[]];
+    } catch (error) {
+      console.error("Fetch error:", error);
+      return [[""], [""]];
     }
-    getData();
-  }, []);
-
-  const honey_char = chosen[3];
-
-  const handleSymbolClick = (value: string, isHoneyChar = false) => {
-    const updatedStore = toStore.concat(value);
-    setToStore(updatedStore);
-    if (isHoneyChar) {
-      const updatedDisplay = updatedStore.replace(
-        new RegExp(value, "g"),
-        `<span style="color: #fbbf24;">${value}</span>`,
-      );
-      setToDisplay(updatedDisplay);
-    } else {
-      const updatedDisplay = toDisplay.concat(value);
-      setToDisplay(updatedDisplay);
-    }
-  };
-
-  const handleBackspace = () => {
-    const updatedStore = toStore.slice(0, -1);
-    setToStore(updatedStore);
-    setToDisplay(
-      updatedStore.replace(
-        new RegExp(honey_char, "g"),
-        `<span style="color: #fbbf24;">${honey_char}</span>`,
-      ),
-    );
-  };
+  }
 
   return (
     <div className="grid grid-cols-3 items-center">
       <GuessBox />
       <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-        <Display toDisplay={toDisplay} onBackspace={handleBackspace} />
-        <SymbolGrid
+        <GameWrapper
           chosen={chosen}
-          onClick={handleSymbolClick}
-          honeyChar={honey_char}
-        />
-        <SubmitButton />
+          possible_words={possible_words}
+        ></GameWrapper>
       </div>
       <Hints />
     </div>
