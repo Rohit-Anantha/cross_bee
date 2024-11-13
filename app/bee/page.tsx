@@ -10,7 +10,7 @@ export default async function Home() {
     // Handle the case where data is undefined
     return [[""], [""]];
   }
-  const [chosen] = data;
+  const [chosen, possible_words] = data;
 
   async function getData() {
     try {
@@ -18,7 +18,7 @@ export default async function Home() {
       if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
       const jsonData = await response.json();
-      return [jsonData.chosen as string[]];
+      return [jsonData.chosen as string[], jsonData.possible_words as string[]];
     } catch (error) {
       console.error("Fetch error:", error);
       return [[""], [""]];
@@ -50,6 +50,7 @@ export default async function Home() {
       <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
         <GameWrapper
           chosen={chosen}
+          possible_words={possible_words}
           guesses={guesses_data.map((guess) => guess.content)}
         ></GameWrapper>
       </div>

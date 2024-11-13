@@ -6,20 +6,31 @@ import { Delete } from "lucide-react";
 import GuessBox from "./GuessBox";
 import Hints from "./Hints";
 import { useToast } from "@/hooks/use-toast";
-
+import { Progress } from "@/components/ui/progress";
 
 interface GameDisplayProps {
   chosen: string[];
+  possible_words: string[];
   guesses: string[];
 }
 
-export default function GameDisplay({ chosen, guesses }: GameDisplayProps) {
+export default function GameDisplay({
+  chosen,
+  possible_words,
+  guesses,
+}: GameDisplayProps) {
   const [toDisplay, setToDisplay] = useState("");
   const [toStore, setToStore] = useState("");
   const [localWords, setLocalWords] = useState(guesses);
   const honey_char = chosen[3];
   const { toast } = useToast();
-
+  const [score, setScore] = useState(0);
+  const add_score = (word: string) => 1 + (word.length - 1) * 3;
+  const totalScore = possible_words.reduce((sum, word) => {
+    const score = add_score(word); // Calculate score for each word
+    return sum + score; // Add score to the running total
+  }, 0);
+  const checkpoints = [0, 1, 2, 3, 4].map((i) => (totalScore / 4) * i);
   const handleSymbolClick = (value: string, isHoneyChar = false) => {
     const updatedStore = toStore.concat(value);
     setToStore(updatedStore);
@@ -72,11 +83,23 @@ export default function GameDisplay({ chosen, guesses }: GameDisplayProps) {
       if (
         isValid &&
         toStore.includes(honey_char) &&
-        !localWords.includes(toStore)
+        !localWords.includes(toStore) &&
+        toStore.length > 3
       ) {
+        const add_score = 1 + (toStore.length - 1) * 3;
+        toast({
+          title: "You got " + add_score + " points!",
+        });
+        setScore(add_score + score);
         setLocalWords([...localWords, toStore]);
         setToStore("");
         setToDisplay("");
+      } else if (toStore.length <= 3) {
+        toast({
+          variant: "destructive",
+          title: "Word too short!",
+          description: "The word is too short, try a new word!",
+        });
       } else if (localWords.includes(toStore)) {
         toast({
           variant: "destructive",
@@ -122,7 +145,29 @@ export default function GameDisplay({ chosen, guesses }: GameDisplayProps) {
         </Button>
       </div>
       <div className="grid grid-cols-3 justify-center">
-        <GuessBox guesses={localWords}></GuessBox>
+        <div className="flex flex-col gap-5">
+          <div className="relative mb-2 flex">
+            {checkpoints.map((checkpoint, index) => {
+              // Check if the user has passed this checkpoint
+              const isPassed = score >= checkpoint;
+              return (
+                <div
+                  key={index}
+                  className={`text-xs ${isPassed ? "font-bold text-amber-400" : ""}`} // Apply bold and color change if passed
+                  style={{
+                    left: `${(checkpoint / totalScore) * 100}%`,
+                    position: "absolute", // Ensure the text is positioned correctly above the progress bar
+                  }}
+                >
+                  {Math.round(checkpoint)}
+                </div>
+              );
+            })}
+          </div>
+
+          <Progress value={(score / totalScore) * 100} />
+          <GuessBox guesses={localWords}></GuessBox>
+        </div>
         <div className="flex flex-col items-center justify-center">
           <div className="grid grid-rows-3 gap-4 p-40">
             <div className="flex justify-center gap-4">
