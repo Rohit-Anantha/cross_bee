@@ -6,7 +6,18 @@ import { Delete } from "lucide-react";
 import GuessBox from "./GuessBox";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
-import { useChat } from "ai/react";
+import { generateText } from "ai";
+import { createOpenAI as createGroq } from "@ai-sdk/openai";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface GameDisplayProps {
   chosen: string[];
@@ -25,13 +36,14 @@ export default function GameDisplay({
   const honey_char = chosen[3];
   const { toast } = useToast();
   const [score, setScore] = useState(0);
+  const [hint, setHint] = useState("");
+  const [randomIndex, setRandomIndex] = useState(0);
   const add_score = (word: string) => 1 + (word.length - 1) * 3;
   const totalScore = possible_words.reduce((sum, word) => {
     const score = add_score(word); // Calculate score for each word
     return sum + score; // Add score to the running total
   }, 0);
   const checkpoints = [0, 1, 2, 3, 4].map((i) => (totalScore / 4) * i);
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
 
   const handleSymbolClick = (value: string, isHoneyChar = false) => {
     const updatedStore = toStore.concat(value);
@@ -47,10 +59,24 @@ export default function GameDisplay({
       setToDisplay(updatedDisplay);
     }
   };
+  const groq = createGroq({
+    baseURL: "https://api.groq.com/openai/v1",
+    apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
+  });
 
-  const handleHint = () => {
-    console.log(toStore);
-    console.log(m)
+  const handleHint = async () => {
+    const unguessedWords = possible_words.filter(
+      (word) => !guesses.includes(word),
+    );
+    const randomIndex = Math.floor(Math.random() * unguessedWords.length);
+    setRandomIndex(randomIndex);
+    const { text } = await generateText({
+      model: groq("llama-3.1-70b-versatile"),
+      prompt:
+        "Respond with a one sentence crossword style clye for the following word. Do not give any other information than the sentence. Here's the word:" +
+        unguessedWords[randomIndex],
+    });
+    setHint(unguessedWords[randomIndex].length + " letters: " + text);
   };
 
   const handleBackspace = () => {
@@ -72,12 +98,10 @@ export default function GameDisplay({
       return false;
     }
     const data = await response.json();
-    console.log(data);
     return true;
   }
 
   const handleWordSubmit = () => {
-    console.log(toStore);
     isValidWord(toStore).then((isValid) => {
       if (
         isValid &&
@@ -152,12 +176,26 @@ export default function GameDisplay({
           </div>
 
           <Progress value={(score / totalScore) * 100} />
-          <Button
-            className="w-min self-center bg-amber-400"
-            onClick={handleHint}
-          >
-            Get Hint?
-          </Button>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                className="w-min self-center bg-amber-400"
+                onClick={handleHint}
+              >
+                Get Hint?
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Your Hint is:</AlertDialogTitle>
+                <AlertDialogDescription>{hint}</AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogAction>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <GuessBox guesses={localWords}></GuessBox>
         </div>
         <div className="col-span-2 flex flex-col items-center">
