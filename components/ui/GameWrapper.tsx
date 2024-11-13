@@ -82,20 +82,24 @@ export default function GameDisplay({
   // when the user asks for a hint, get a hint for one of the words they haven't
   // guessed yet
   const handleHint = async () => {
+    if (!localWords.includes(hintWord)) {
+      // the user hasn't guessed the word from the hint, don't generate a new one
+      return
+    }
     const unguessedWords = possible_words.filter(
       (word) => !localWords.includes(word),
     );
     console.log(unguessedWords);
     const temp = Math.floor(Math.random() * unguessedWords.length);
-    const hintWord = unguessedWords[temp];
-    setHintWord(unguessedWords[temp]);
+    const tempHintWord = unguessedWords[temp];
+    setHintWord(tempHintWord);
     const { text } = await generateText({
       model: groq("llama-3.1-70b-versatile"),
       prompt:
         "Respond with a cryptic one sentence crossword style clue for the following word. Do not give any other information than the sentence. Here's the word:" +
-        hintWord,
+        tempHintWord,
     });
-    setHint(hintWord.length + " letters: " + text);
+    setHint(tempHintWord.length + " letters: " + text);
   };
 
   // when we click backspace, remove one of the letters
