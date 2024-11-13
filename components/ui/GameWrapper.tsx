@@ -131,19 +131,6 @@ export default function GameDisplay({
 
   return (
     <>
-      <div className="flex flex-col justify-center gap-5">
-        <div className="items-center justify-center gap-10">
-          <h1
-            dangerouslySetInnerHTML={{
-              __html: toDisplay === "" ? "_" : toDisplay,
-            }}
-            className="text-center text-7xl font-extrabold"
-          ></h1>
-        </div>
-        <Button className="w-min self-center" onClick={handleBackspace}>
-          <Delete />
-        </Button>
-      </div>
       <div className="grid grid-cols-3 justify-center">
         <div className="flex flex-col gap-5">
           <div className="relative mb-2 flex">
@@ -168,7 +155,20 @@ export default function GameDisplay({
           <Progress value={(score / totalScore) * 100} />
           <GuessBox guesses={localWords}></GuessBox>
         </div>
-        <div className="flex flex-col items-center justify-center">
+        <div className="col-span-2 flex flex-col items-center justify-center">
+          <div className="flex flex-col justify-center gap-5">
+            <div className="items-center justify-center gap-10">
+              <h1
+                dangerouslySetInnerHTML={{
+                  __html: toDisplay === "" ? "_" : toDisplay,
+                }}
+                className="text-center text-7xl font-extrabold"
+              ></h1>
+            </div>
+            <Button className="w-min self-center" onClick={handleBackspace}>
+              <Delete />
+            </Button>
+          </div>
           <div className="grid grid-rows-3 gap-4 p-40">
             <div className="flex justify-center gap-4">
               <Button onClick={() => handleSymbolClick(chosen[0])}>
@@ -211,8 +211,6 @@ export default function GameDisplay({
             </Button>
           </div>
         </div>
-
-        <Hints />
       </div>
     </>
   );

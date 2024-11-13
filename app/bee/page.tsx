@@ -47,7 +47,7 @@ export default async function Home() {
           <UserButton></UserButton>
         </SignedIn>
       </div>
-      <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <div className="font-[family-name:var(--font-geist-sans)] sm:p-20">
         <GameWrapper
           chosen={chosen}
           possible_words={possible_words}
