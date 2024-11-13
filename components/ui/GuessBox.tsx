@@ -20,7 +20,7 @@ export default function GuessBox({ guesses }: GuessBoxProps) {
             key={index}
             className="flex items-center justify-center rounded-md border bg-white bg-opacity-80 p-4"
           >
-            <span className="text-xs">{guess}</span>
+            <span className="text-s">{guess}</span>
           </div>
         ))}
       </div>

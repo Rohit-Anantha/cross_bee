@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Delete } from "lucide-react";
 import GuessBox from "./GuessBox";
-import Hints from "./Hints";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { useChat } from "ai/react";
 
 interface GameDisplayProps {
   chosen: string[];
@@ -31,6 +31,8 @@ export default function GameDisplay({
     return sum + score; // Add score to the running total
   }, 0);
   const checkpoints = [0, 1, 2, 3, 4].map((i) => (totalScore / 4) * i);
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
+
   const handleSymbolClick = (value: string, isHoneyChar = false) => {
     const updatedStore = toStore.concat(value);
     setToStore(updatedStore);
@@ -46,6 +48,11 @@ export default function GameDisplay({
     }
   };
 
+  const handleHint = () => {
+    console.log(toStore);
+    console.log(m)
+  };
+
   const handleBackspace = () => {
     const updatedStore = toStore.slice(0, -1);
     setToStore(updatedStore);
@@ -58,26 +65,18 @@ export default function GameDisplay({
   };
 
   async function isValidWord(word: string) {
-    // Make sure the URL is correctly formatted
     const response = await fetch(
       `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
     );
-
-    // Check if the response is successful
     if (!response.ok) {
-      return false; // If the word is not found, return false
+      return false;
     }
-
-    // Parse the response JSON
     const data = await response.json();
     console.log(data);
-
-    // If the API returns valid data, it's a real word
     return true;
   }
 
-  const handleSubmit = () => {
-    console.log("handle submit");
+  const handleWordSubmit = () => {
     console.log(toStore);
     isValidWord(toStore).then((isValid) => {
       if (
@@ -153,11 +152,17 @@ export default function GameDisplay({
           </div>
 
           <Progress value={(score / totalScore) * 100} />
+          <Button
+            className="w-min self-center bg-amber-400"
+            onClick={handleHint}
+          >
+            Get Hint?
+          </Button>
           <GuessBox guesses={localWords}></GuessBox>
         </div>
-        <div className="col-span-2 flex flex-col items-center justify-center">
+        <div className="col-span-2 flex flex-col items-center">
           <div className="flex flex-col justify-center gap-5">
-            <div className="items-center justify-center gap-10">
+            <div className="justify-center gap-5">
               <h1
                 dangerouslySetInnerHTML={{
                   __html: toDisplay === "" ? "_" : toDisplay,
@@ -205,7 +210,7 @@ export default function GameDisplay({
             <Button
               className="bg-amber-400 font-extrabold"
               type="submit"
-              onClick={() => handleSubmit()}
+              onClick={() => handleWordSubmit()}
             >
               SUBMIT
             </Button>
