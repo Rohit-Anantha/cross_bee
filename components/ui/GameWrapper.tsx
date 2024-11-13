@@ -7,6 +7,7 @@ import GuessBox from "./GuessBox";
 import Hints from "./Hints";
 import { useToast } from "@/hooks/use-toast";
 
+
 interface GameDisplayProps {
   chosen: string[];
   guesses: string[];
@@ -81,6 +82,14 @@ export default function GameDisplay({ chosen, guesses }: GameDisplayProps) {
           variant: "destructive",
           title: "Already Guessed!",
           description: "You've already guessed this word, try a new word!",
+        });
+        setToStore("");
+        setToDisplay("");
+      } else if (!toStore.includes(honey_char)) {
+        toast({
+          variant: "destructive",
+          title: "You didn't use the Honey Character!",
+          description: "Make sure to use the center vowel in all words!",
         });
         setToStore("");
         setToDisplay("");

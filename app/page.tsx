@@ -31,7 +31,7 @@ export default function Home() {
         <div className="flex flex-col items-center p-10 sm:inline-flex">
           <SignedOut>
             <SignInButton>
-              <Button size="lg">Get started</Button>
+              <Button size="lg">Log In / Sign Up</Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>

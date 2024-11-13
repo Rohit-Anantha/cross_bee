@@ -1,5 +1,7 @@
 // Home.tsx
+import { Button } from "@/components/ui/button";
 import GameWrapper from "@/components/ui/GameWrapper";
+import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 
 export default async function Home() {
   // async call to api directly
@@ -34,11 +36,23 @@ export default async function Home() {
   // const guesses_data = await getGuessesData();
   const guesses_data = [{ content: "" }];
   return (
-    <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-      <GameWrapper
-        chosen={chosen}
-        guesses={guesses_data.map((guess) => guess.content)}
-      ></GameWrapper>
-    </div>
+    <>
+      <div className="p-5">
+        <SignedOut>
+          <SignInButton>
+            <Button>Sign In:</Button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton></UserButton>
+        </SignedIn>
+      </div>
+      <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+        <GameWrapper
+          chosen={chosen}
+          guesses={guesses_data.map((guess) => guess.content)}
+        ></GameWrapper>
+      </div>
+    </>
   );
 }
