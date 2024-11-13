@@ -2,8 +2,6 @@
 
 "use client";
 
-import { inspect } from "util";
-
 interface GuessBoxProps {
   guesses: string[];
 }

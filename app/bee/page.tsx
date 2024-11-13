@@ -1,9 +1,5 @@
 // Home.tsx
-import { auth } from "@clerk/nextjs/server";
-import GuessBox from "../../components/ui/GuessBox";
-import Hints from "../../components/ui/Hints";
 import GameWrapper from "@/components/ui/GameWrapper";
-import { getGuesses } from "@/src/db/queries";
 
 export default async function Home() {
   // async call to api directly
@@ -26,15 +22,15 @@ export default async function Home() {
       return [[""], [""]];
     }
   }
-  async function getGuessesData() {
-    const data = await getGuesses();
-    console.log("get Guesses {data}");
-    console.log(data);
-    if (data === null) {
-      return [{ content: "No Guesses Yet" }];
-    }
-    return data;
-  }
+  // async function getGuessesData() {
+  //   const data = await getGuesses();
+  //   console.log("get Guesses {data}");
+  //   console.log(data);
+  //   if (data === null) {
+  //     return [{ content: "No Guesses Yet" }];
+  //   }
+  //   return data;
+  // }
   // const guesses_data = await getGuessesData();
   const guesses_data = [{ content: "" }];
   return (
