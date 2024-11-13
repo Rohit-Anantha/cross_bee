@@ -36,24 +36,19 @@ export default async function Home() {
   // const guesses_data = await getGuessesData();
   const guesses_data = [{ content: "" }];
   return (
-    <>
+    <div className="grid h-screen min-h-0 grid-rows-[auto_1fr]">
       <div className="p-5">
-        <SignedOut>
-          <SignInButton>
-            <Button>Sign In:</Button>
-          </SignInButton>
-        </SignedOut>
         <SignedIn>
           <UserButton></UserButton>
         </SignedIn>
       </div>
-      <div className="font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <div className="font-[family-name:var(--font-geist-sans)] sm:p-10">
         <GameWrapper
           chosen={chosen}
           possible_words={possible_words}
           guesses={guesses_data.map((guess) => guess.content)}
         ></GameWrapper>
       </div>
-    </>
+    </div>
   );
 }
