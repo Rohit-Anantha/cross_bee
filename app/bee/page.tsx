@@ -12,7 +12,7 @@ export default async function Home() {
     // Handle the case where data is undefined
     return [[""], [""]];
   }
-  const [chosen, possible_words] = data;
+  const [chosen] = data;
 
   async function getData() {
     try {
@@ -20,7 +20,7 @@ export default async function Home() {
       if (!response.ok)
         throw new Error(`HTTP error! Status: ${response.status}`);
       const jsonData = await response.json();
-      return [jsonData.chosen as string[], jsonData.possible_words as string[]];
+      return [jsonData.chosen as string[]];
     } catch (error) {
       console.error("Fetch error:", error);
       return [[""], [""]];
@@ -35,18 +35,14 @@ export default async function Home() {
     }
     return data;
   }
-  const guesses_data = await getGuessesData();
-
+  // const guesses_data = await getGuessesData();
+  const guesses_data = [{ content: "" }];
   return (
-    <div className="grid grid-cols-3 items-center">
-      <GuessBox guesses={guesses_data.map((guess) => guess.content)} />
-      <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
-        <GameWrapper
-          chosen={chosen}
-          possible_words={possible_words}
-        ></GameWrapper>
-      </div>
-      <Hints />
+    <div className="min-h-screen items-center justify-items-center gap-16 p-10 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <GameWrapper
+        chosen={chosen}
+        guesses={guesses_data.map((guess) => guess.content)}
+      ></GameWrapper>
     </div>
   );
 }

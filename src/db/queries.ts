@@ -17,8 +17,10 @@ export async function getGuesses(): Promise<{ content: string }[]> {
 
 export async function addGuess(guess: string) {
   const userId = (await auth()).userId!;
-  return await db.insert(guessTable).values({
+  await db.insert(guessTable).values({
     user_id: userId,
     content: guess,
   });
+
+  return { success: true };
 }
