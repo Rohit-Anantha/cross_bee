@@ -1,7 +1,6 @@
 // Home.tsx
-import { Button } from "@/components/ui/button";
 import GameWrapper from "@/components/ui/GameWrapper";
-import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 export default async function Home() {
   // async call to api directly

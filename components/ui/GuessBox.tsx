@@ -14,11 +14,11 @@ export default function GuessBox({ guesses }: GuessBoxProps) {
       <h2 className="justify-center text-xl font-semibold text-gray-800">
         Your Guesses
       </h2>
-      <div className="grid max-h-80 grid-cols-3 gap-3 overflow-y-auto rounded-lg p-1">
+      <div className="grid max-h-80 grid-cols-3 gap-3 overflow-y-auto rounded-lg border p-1">
         {filteredGuesses.map((guess, index) => (
           <div
             key={index}
-            className="flex items-center justify-center rounded-md border bg-white bg-opacity-80 p-4"
+            className="flex items-center justify-center rounded-md border bg-white bg-opacity-80 p-4 "
           >
             <span className="text-s">{guess}</span>
           </div>

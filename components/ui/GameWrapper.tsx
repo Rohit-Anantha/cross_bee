@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Delete } from "lucide-react";
 import GuessBox from "./GuessBox";
@@ -46,13 +46,13 @@ export default function GameDisplay({
   // the random word retrieved when the hint
   const [hintWord, setHintWord] = useState("");
 
-  // function for making word into points for score
-  const add_score = (word: string) => 1 + (word.length - 1) * 3;
   // toast const in order to display error message
   const { toast } = useToast();
+  // function for making word into points for score
+  const add_score = (word: string) => 1 + (word.length - 1) * 3;
   // total possible score from the list of generated top 10k words
   const totalScore = possible_words.reduce((sum, word) => {
-    const score = add_score(word); // Calculate score for each word
+    const score = 1 + (word.length - 1) * 2; // Calculate score for each word
     return sum + score; // Add score to the running total
   }, 0);
   // checkpoints for score based on the total score
@@ -82,10 +82,10 @@ export default function GameDisplay({
   // when the user asks for a hint, get a hint for one of the words they haven't
   // guessed yet
   const handleHint = async () => {
-    if (!localWords.includes(hintWord)) {
-      // the user hasn't guessed the word from the hint, don't generate a new one
-      return
-    }
+    // if (!localWords.includes(hintWord)) {
+    //   // the user hasn't guessed the word from the hint, don't generate a new one
+    //   return;
+    // }
     const unguessedWords = possible_words.filter(
       (word) => !localWords.includes(word),
     );
@@ -103,17 +103,80 @@ export default function GameDisplay({
   };
 
   // when we click backspace, remove one of the letters
-  // TODO: keystroke
   const handleBackspace = () => {
     const updatedStore = toStore.slice(0, -1);
     setToStore(updatedStore);
-    setToDisplay(
-      updatedStore.replace(
-        new RegExp(honey_char, "g"),
-        `<span style="color: #fbbf24;">${honey_char}</span>`,
-      ),
-    );
+    const updatedDisplay = updatedStore
+      .split("")
+      .map((char) => {
+        if (chosen.includes(char)) {
+          // Highlight honey_char or keep the valid character
+          return char === honey_char
+            ? `<span style="color: #fbbf24;">${char}</span>`
+            : char;
+        } else {
+          // Grey out characters not in chosenCharacters
+          return `<span style="color: #d1d5db;">${char}</span>`;
+        }
+      })
+      .join("");
+    setToDisplay(updatedDisplay);
   };
+
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.key == "Enter") {
+      event.preventDefault();
+      handleWordSubmit();
+    } else if (event.key === "Backspace") {
+      // Handle backspace
+      const updatedStore = toStore.slice(0, -1);
+      setToStore(updatedStore);
+      const updatedDisplay = updatedStore
+        .split("")
+        .map((char) => {
+          if (chosen.includes(char)) {
+            // Highlight honey_char or keep the valid character
+            return char === honey_char
+              ? `<span style="color: #fbbf24;">${char}</span>`
+              : char;
+          } else {
+            // Grey out characters not in chosenCharacters
+            return `<span style="color: #d1d5db;">${char}</span>`;
+          }
+        })
+        .join("");
+      setToDisplay(updatedDisplay);
+    } else if (event.key.length === 1) {
+      // Handle character input (ignores special keys like Shift, Ctrl, etc.)
+      const updatedStore = toStore + event.key.toUpperCase();
+      setToStore(updatedStore);
+      const updatedDisplay = updatedStore
+        .split("")
+        .map((char) => {
+          if (chosen.includes(char)) {
+            // Highlight honey_char or keep the valid character
+            return char === honey_char
+              ? `<span style="color: #fbbf24;">${char}</span>`
+              : char;
+          } else {
+            // Grey out characters not in chosenCharacters
+            return `<span style="color: #d1d5db;">${char}</span>`;
+          }
+        })
+        .join("");
+      setToDisplay(updatedDisplay);
+    }
+    // You can add more cases here for other keys if needed
+  };
+
+  // Attach the event listener when the component mounts
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      // Clean up the event listener when the component unmounts
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [toStore, honey_char]);
 
   // check if a word submitted by the user exists in the dictionary, maybe not in our possible words
   async function isValidWord(word: string) {
@@ -130,8 +193,15 @@ export default function GameDisplay({
   // display info if not.
   const handleWordSubmit = () => {
     isValidWord(toStore).then((isValid) => {
+      const allCharactersValid = toStore
+        .split("")
+        .every((char) => chosen.includes(char));
+      if (!allCharactersValid) {
+        return false;
+      }
       if (
         (isValid || possible_words.includes(toStore)) &&
+        allCharactersValid &&
         toStore.includes(honey_char) &&
         !localWords.includes(toStore) &&
         toStore.length > 3
@@ -163,6 +233,14 @@ export default function GameDisplay({
           variant: "destructive",
           title: "You didn't use the Honey Character!",
           description: "Make sure to use the center vowel in all words!",
+        });
+        setToStore("");
+        setToDisplay("");
+      } else if (!allCharactersValid) {
+        toast({
+          variant: "destructive",
+          title: "Make sure to use only the given characters!",
+          description: "Did you mispell something?",
         });
         setToStore("");
         setToDisplay("");
