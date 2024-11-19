@@ -7,9 +7,13 @@ export default async function Home() {
   const data = await getData();
   if (!data) {
     // Handle the case where data is undefined
-    return [[""], [""], [""]];
+    return [[""], [""], ""];
   }
-  const [chosen, possible_words, honey_char] = data;
+  const [chosen, possible_words, honey_char] = data as [
+    string[],
+    string[],
+    string,
+  ];
 
   async function getData() {
     try {
@@ -20,11 +24,11 @@ export default async function Home() {
       return [
         jsonData.chosen as string[],
         jsonData.possible_words as string[],
-        jsonData.honey_char as string[],
+        jsonData.honey_char as string,
       ];
     } catch (error) {
       console.error("Fetch error:", error);
-      return [[""], [""], [""]];
+      return [["NULL"], ["NULL"], "NULL"];
     }
   }
   // async function getGuessesData() {
@@ -50,7 +54,7 @@ export default async function Home() {
           chosen={chosen}
           possible_words={possible_words}
           guesses={guesses_data.map((guess) => guess.content)}
-          honey_char={honey_char[0]}
+          honey_char={honey_char}
         ></GameWrapper>
       </div>
     </div>

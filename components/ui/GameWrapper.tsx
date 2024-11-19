@@ -45,11 +45,11 @@ export default function GameDisplay({
   const [hint, setHint] = useState("");
   // the random word retrieved when the hint
   const [hintWord, setHintWord] = useState("");
-
+  console.log(hintWord);
   // toast const in order to display error message
   const { toast } = useToast();
   // function for making word into points for score
-  const add_score = (word: string) => 1 + (word.length - 1) * 3;
+  // const add_score = (word: string) => 1 + (word.length - 1) * 3;
   // total possible score from the list of generated top 10k words
   const totalScore = possible_words.reduce((sum, word) => {
     const score = 1 + (word.length - 1) * 2; // Calculate score for each word
